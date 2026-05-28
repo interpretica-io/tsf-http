@@ -107,7 +107,13 @@ headers_hsts_age(const char *value)
     while (*age == ' ' || *age == '=')
         age++;
 
-    if (te_strtoui(age, 10, &result) != 0)
+    /*
+     * The digits and nothing after them: the header is
+     * "max-age=31536000; includeSubDomains", and te_strtoui() refuses
+     * the whole of that - which would read as an age of zero and
+     * report a short max-age on a header that is perfectly fine.
+     */
+    if (!tapi_http_number(age, &result))
         return 0;
 
     return result;

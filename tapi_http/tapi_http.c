@@ -61,6 +61,28 @@ tapi_http_arg(te_vec *args, const char *fmt, ...)
 }
 
 /* See description in tapi_http_internal.h */
+bool
+tapi_http_number(const char *text, unsigned int *value)
+{
+    unsigned int result = 0;
+    bool any = false;
+
+    while (*text == ' ' || *text == '\t')
+        text++;
+
+    for (; *text >= '0' && *text <= '9'; text++)
+    {
+        result = result * 10 + (unsigned int)(*text - '0');
+        any = true;
+    }
+
+    if (any)
+        *value = result;
+
+    return any;
+}
+
+/* See description in tapi_http_internal.h */
 char *
 tapi_http_trim(char *text)
 {
@@ -272,7 +294,12 @@ http_parse(const char *text, tapi_http_response *response)
                     while (*reason == ' ')
                         reason++;
 
-                    (void)te_strtoui(reason, 10, &status);
+                    /*
+                     * The digits and nothing after them: a status line
+                     * is "200 OK", and te_strtoui() refuses anything
+                     * with a reason phrase attached.
+                     */
+                    (void)tapi_http_number(reason, &status);
                     response->status = status;
                     http_add_chain(response, status);
 

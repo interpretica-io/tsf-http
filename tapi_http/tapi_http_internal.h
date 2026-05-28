@@ -59,6 +59,23 @@ extern te_errno tapi_http_spawn(tapi_job_factory_t *factory,
                                 const te_vec *args, tapi_devtool_run *run);
 
 /**
+ * Read the number @p text starts with.
+ *
+ * te_strtoui() refuses a string with anything after the digits, which
+ * is right for a field that should be a number and wrong for every
+ * number this library reads: a status line is "200 OK" and an HSTS
+ * header is "31536000; includeSubDomains". Both are numbers followed
+ * by something, and asking te_strtoui() for them gets a parse error
+ * and a zero that reads exactly like "no status at all".
+ *
+ * @param[in]  text     Text beginning with digits.
+ * @param[out] value    Where to put the number.
+ *
+ * @return @c true when @p text began with a digit.
+ */
+extern bool tapi_http_number(const char *text, unsigned int *value);
+
+/**
  * Trim whitespace from both ends of @p text, in place.
  *
  * @param text          String to trim.
