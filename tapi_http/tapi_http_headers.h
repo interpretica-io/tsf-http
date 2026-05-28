@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: Apache-2.0 */
+/* SPDX-License-Identifier: MIT */
 /* Copyright (C) 2026 Interpretica Unipessoal Lda */
 /** @file
  * @brief What the response headers say about the service
